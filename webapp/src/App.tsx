@@ -28,9 +28,10 @@ function App() {
 
   const handleStartCaptureClick = React.useCallback(() => {
     setCapturing(true)
+    const webmSupported = MediaRecorder.isTypeSupported('video/webm')
     // @ts-expect-error
     mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, {
-      mimeType: 'video/webm',
+      mimeType: webmSupported ? 'video/webm' : 'video/mp4',
     })
     // @ts-expect-error
     mediaRecorderRef.current.addEventListener(
@@ -50,7 +51,7 @@ function App() {
   const send = React.useCallback(() => {
     if (recordedChunks.length) {
       const blob = new Blob(recordedChunks, {
-        type: 'video/webm',
+        type: mediaRecorderRef.current.mimeType,
       })
       api.sendRecording(blob, url)
       setRecordedChunks([])
