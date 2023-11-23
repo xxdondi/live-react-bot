@@ -28,7 +28,7 @@ function processVideo(filename1: string, filename2): Promise<void> {
         '[0:v]scale=320:-1[v0];[1:v]scale=320:-1[v1];[v0][v1]vstack'
       )
       .withFPSOutput(30)
-      .output('test.mp4')
+      .output('/tmp/test.mp4')
       .on('end', function () {
         resolve()
         console.log('finished processing')
@@ -46,20 +46,23 @@ export default async (req: Request) => {
   const blob = json['blob'],
     noteUrl = json['noteUrl']
 
-  await downloadFile(noteUrl, 'note.mp4')
-  fs.writeFileSync('userVideo.webm', Buffer.from(blob, 'base64'))
-  await processVideo('userVideo.webm', 'note.mp4')
+  await downloadFile(noteUrl, '/tmp/note.mp4')
+  fs.writeFileSync('/tmp/userVideo.webm', Buffer.from(blob, 'base64'))
+  await processVideo('/tmp/userVideo.webm', '/tmp/note.mp4')
 
-  await fs.unlinkSync('userVideo.webm')
-  await fs.unlinkSync('note.mp4')
+  await fs.unlinkSync('/tmp/userVideo.webm')
+  await fs.unlinkSync('/tmp/note.mp4')
 
   const bot = new Telegraf('6948869191:AAGsNU7mEvX58SY6DpoPgMoynUNaDaRj0aU')
 
   bot.launch()
-  // @ts-expect-error
-  await bot.telegram.sendVideoNote(16392240, Input.fromLocalFile('test.mp4'))
+  await bot.telegram.sendVideoNote(
+    16392240,
+    // @ts-expect-error
+    Input.fromLocalFile('/tmp/test.mp4')
+  )
   await bot.stop()
-  await fs.unlinkSync('test.mp4')
+  await fs.unlinkSync('/tmp/test.mp4')
 
   return new Response(JSON.stringify({ status: 'ok' }), {
     status: 200,
