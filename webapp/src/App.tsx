@@ -75,6 +75,7 @@ function App() {
   return (
     <div className="App">
       <video
+        playsinline
         id="video"
         width="240"
         height="240"

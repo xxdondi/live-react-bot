@@ -53,3 +53,7 @@
   margin: 0 auto;
   z-index: 9999;
 }
+
+.buttons-panel button{
+  padding: 10px;
+}
