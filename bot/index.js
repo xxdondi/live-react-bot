@@ -18,11 +18,11 @@ bot.start((ctx) => ctx.reply(
 ))
 
 bot.on(message('video_note'), (ctx) => {
-  const finalUrl = WEB_APP_URL + objectToBase64Json({ link: fileLink  })
   bot
     .telegram
     .getFileLink(ctx.message.video_note.file_id)
     .then((fileLink) => {
+      const finalUrl = WEB_APP_URL + objectToBase64Json({ link: fileLink  })
       ctx.reply('Click React to get started :) ', {
         reply_markup: {
           inline_keyboard: [

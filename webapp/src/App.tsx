@@ -89,6 +89,15 @@ function App() {
           <button onClick={handleStartCaptureClick}>Record 🔴</button>
         )}
         {recordedChunks.length > 0 && <button onClick={send}>Send ✅</button>}
+        <button
+          onClick={() => {
+            window.Telegram.WebApp.openLink(window.location.href, {
+              try_instant_view: false,
+            })
+          }}
+        >
+          Open External 🔄
+        </button>
       </div>
     </div>
   )
