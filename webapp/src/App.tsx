@@ -11,6 +11,7 @@ import Webcam from 'react-webcam'
 
 function App() {
   const [url, setUrl] = useState('')
+  const videoNoteRef = useRef<HTMLVideoElement>(null)
   const webcamRef = useRef<HTMLVideoElement>(null)
   const mediaRecorderRef = useRef(null)
   const [capturing, setCapturing] = useState(false)
@@ -28,6 +29,8 @@ function App() {
 
   const handleStartCaptureClick = React.useCallback(() => {
     setCapturing(true)
+    videoNoteRef.current.currentTime = 0
+    videoNoteRef.current.play()
     const webmSupported = MediaRecorder.isTypeSupported('video/webm')
     // @ts-expect-error
     mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, {
@@ -43,6 +46,7 @@ function App() {
   }, [webcamRef, setCapturing, mediaRecorderRef, handleDataAvailable])
 
   const handleStopCaptureClick = React.useCallback(() => {
+    videoNoteRef.current.stop()
     // @ts-expect-error
     mediaRecorderRef.current.stop()
     setCapturing(false)
@@ -66,14 +70,20 @@ function App() {
   }, [])
   return (
     <div className="App">
-      <video id="video" width="240" height="240" src={url}></video>
+      <video
+        id="video"
+        width="240"
+        height="240"
+        src={url}
+        ref={videoNoteRef}
+      ></video>
       <Webcam mirrored={true} ref={webcamRef} />
       {capturing ? (
-        <button onClick={handleStopCaptureClick}>Stop Capture</button>
+        <button onClick={handleStopCaptureClick}>Stop ⏹️</button>
       ) : (
-        <button onClick={handleStartCaptureClick}>Start Capture</button>
+        <button onClick={handleStartCaptureClick}>Record 🔴</button>
       )}
-      {recordedChunks.length > 0 && <button onClick={send}>Send</button>}
+      {recordedChunks.length > 0 && <button onClick={send}>Send ✅</button>}
     </div>
   )
 }
