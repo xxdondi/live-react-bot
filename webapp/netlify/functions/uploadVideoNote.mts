@@ -1,7 +1,7 @@
 import ffmpeg from 'fluent-ffmpeg'
 import { Telegraf, Input } from 'telegraf'
-const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path
-ffmpeg.setFfmpegPath(ffmpegPath)
+import ffmpegPath from '@ffmpeg-installer/ffmpeg'
+ffmpeg.setFfmpegPath(ffmpegPath.path)
 const fs = require('fs')
 import fetch from 'node-fetch'
 
