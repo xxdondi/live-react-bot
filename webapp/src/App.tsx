@@ -9,6 +9,14 @@ import { fromBase64JsonToObject, parseParams } from './util'
 
 import Webcam from 'react-webcam'
 
+/*
+const UPLOAD_STATES = {
+  NOT_STARTED: 'NOT_STARTED',
+  UPLOADING: 'UPLOADING',
+  UPLOADED: 'UPLOADED',
+  ERROR: 'ERROR',
+}
+*/
 function App() {
   const [url, setUrl] = useState('')
   const videoNoteRef = useRef<HTMLVideoElement>(null)
@@ -57,7 +65,10 @@ function App() {
       const blob = new Blob(recordedChunks, {
         type: mediaRecorderRef.current.mimeType,
       })
-      api.sendRecording(blob, url)
+      api
+        .sendRecording(blob, url)
+        .then(() => {})
+        .catch((e) => {})
       setRecordedChunks([])
     }
   }, [recordedChunks, url])
@@ -75,7 +86,7 @@ function App() {
   return (
     <div className="App">
       <video
-        playsinline
+        playsInline
         id="video"
         width="240"
         height="240"

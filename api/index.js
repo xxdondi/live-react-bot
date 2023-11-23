@@ -63,7 +63,8 @@ function processVideo(filename1, filename2) {
       .input(filename1)
       .input(filename2)
       .complexFilter(
-        '[0:v]scale=320:-1[v0];[1:v]scale=320:-1[v1];[v0][v1]vstack'
+        //'[0:v]scale=320:-1[v0];[1:v]scale=320:-1[v1];[v0][v1]vstack'
+        "[0:v]scale=320:320,setpts=PTS-STARTPTS[upper]; [1:v]scale=320:320,setpts=PTS-STARTPTS[lower]; [upper][lower]vstack"
       )
       .withFPSOutput(25)
       .output('/tmp/test.mp4')
