@@ -46,7 +46,7 @@ function App() {
   }, [webcamRef, setCapturing, mediaRecorderRef, handleDataAvailable])
 
   const handleStopCaptureClick = React.useCallback(() => {
-    videoNoteRef.current.stop()
+    videoNoteRef.current?.pause()
     // @ts-expect-error
     mediaRecorderRef.current.stop()
     setCapturing(false)
