@@ -4,6 +4,9 @@ export async function sendRecording(video: Blob, noteUrl: string) {
   formData.append('video', video)
   return fetch('https://dondixx.dev/api/uploadVideo', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({
       noteUrl,
       blob: videoBase64,

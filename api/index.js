@@ -16,8 +16,9 @@ await fastify.register(cors, {
 })
 
 
-fastify.get('/api/uploadVideo', async (req) => {
-  const json = await req.json()
+fastify.post('/api/uploadVideo', async (req) => {
+  const json = req.body
+  console.log({json})
   const blob = json['blob'],
     noteUrl = json['noteUrl']
 
@@ -45,6 +46,7 @@ fastify.get('/api/uploadVideo', async (req) => {
 })
 
 function downloadFile(url, filename) {
+  console.log('downloading file', url)
   return new Promise((resolve, reject) => {
     fetch(url).then((res) => {
       const fileStream = fs.createWriteStream(filename)
