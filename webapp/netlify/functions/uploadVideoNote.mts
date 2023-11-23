@@ -1,21 +1,16 @@
-import type { Context } from "@netlify/functions";
-import { getStore } from "@netlify/blobs";
+import type { Context } from '@netlify/functions'
+import { getStore } from '@netlify/blobs'
 
-export default async (req: Request, context: Context) => {
+export default async (req: Request) => {
   try {
-    const json = await req.json();
-    const blob = json["blob"],
-      id = json["id"];
-    const notesStore = getStore("videoNotes");
-    await notesStore.set(id, blob);
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ id: id }),
-    };
+    req.body
+    const json = await req.json()
+    const blob = json['blob'],
+      id = json['id']
+    const notesStore = getStore('videoNotes')
+    await notesStore.set(id, blob)
+    return new Response(JSON.stringify({ id: id }), { status: 200 })
   } catch {
-    return {
-      statusCode: 404,
-      body: JSON.stringify({ error: "Oops" }),
-    };
+    return new Response(JSON.stringify({ error: 'Oops' }), { status: 404 })
   }
-};
+}

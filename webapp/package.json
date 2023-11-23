@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.7",
+    "@ffmpeg/util": "^0.12.1",
     "@netlify/blobs": "^6.3.0",
     "@netlify/functions": "^2.4.0",
     "@testing-library/jest-dom": "^5.17.0",
