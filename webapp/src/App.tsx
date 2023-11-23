@@ -67,6 +67,10 @@ function App() {
     // @ts-expect-error
     const startData = fromBase64JsonToObject(query['data'])
     setUrl(startData.link)
+    if (window.Telegram) {
+      window.Telegram.WebApp.ready()
+      window.Telegram.WebApp.expand()
+    }
   }, [])
   return (
     <div className="App">
@@ -78,12 +82,14 @@ function App() {
         ref={videoNoteRef}
       ></video>
       <Webcam mirrored={true} ref={webcamRef} />
-      {capturing ? (
-        <button onClick={handleStopCaptureClick}>Stop ⏹️</button>
-      ) : (
-        <button onClick={handleStartCaptureClick}>Record 🔴</button>
-      )}
-      {recordedChunks.length > 0 && <button onClick={send}>Send ✅</button>}
+      <div className="buttons-panel">
+        {capturing ? (
+          <button onClick={handleStopCaptureClick}>Stop ⏹️</button>
+        ) : (
+          <button onClick={handleStartCaptureClick}>Record 🔴</button>
+        )}
+        {recordedChunks.length > 0 && <button onClick={send}>Send ✅</button>}
+      </div>
     </div>
   )
 }

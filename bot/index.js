@@ -18,6 +18,7 @@ bot.start((ctx) => ctx.reply(
 ))
 
 bot.on(message('video_note'), (ctx) => {
+  const finalUrl = WEB_APP_URL + objectToBase64Json({ link: fileLink  })
   bot
     .telegram
     .getFileLink(ctx.message.video_note.file_id)
@@ -29,7 +30,7 @@ bot.on(message('video_note'), (ctx) => {
               {
                 text: 'React',
                 web_app: {
-                  url: WEB_APP_URL + objectToBase64Json({ link: fileLink  }),
+                  url: finalUrl,
                 }
               }
             ]

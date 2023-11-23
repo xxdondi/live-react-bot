@@ -43,3 +43,13 @@
   top: 20px;
   left: 20px;
 }
+
+.buttons-panel {
+  position: absolute;
+  text-align: center;
+  left: 0; right: 0;
+  top: 20px;
+  width: 300px;
+  margin: 0 auto;
+  z-index: 9999;
+}
