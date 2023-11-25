@@ -32,10 +32,13 @@ fastify.post('/api/uploadVideo', async (req) => {
 
   const bot = new Telegraf('6948869191:AAGsNU7mEvX58SY6DpoPgMoynUNaDaRj0aU')
 
-  await bot.telegram.sendVideoNote(
+  await bot.telegram.sendVideo(
     userId,
     // @ts-expect-error
-    Input.fromLocalFile('/tmp/test.mp4')
+    Input.fromLocalFile('/tmp/test.mp4'),
+    {
+      caption: 'Here is your reaction!',
+    }
   )
   await fs.unlinkSync('/tmp/test.mp4')
 
@@ -64,8 +67,9 @@ function processVideo(filename1, filename2) {
       .input(filename2)
       .complexFilter(
         //'[0:v]scale=320:-1[v0];[1:v]scale=320:-1[v1];[v0][v1]vstack'
-        "[0:v]scale=320:320,setpts=PTS-STARTPTS[upper]; [1:v]scale=320:320,setpts=PTS-STARTPTS[lower]; [upper][lower]vstack"
+        "[0:v]scale=320:320,setpts=PTS-STARTPTS[upper]; [1:v]scale=320:320,setpts=PTS-STARTPTS[lower]; [upper][lower]vstack; [0:a][1:a]amix=inputs=2[a]"
       )
+      .map('[a]')
       .withFPSOutput(25)
       .output('/tmp/test.mp4')
       .on('end', function () {

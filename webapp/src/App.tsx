@@ -4,74 +4,22 @@ import './App.css'
 
 import * as api from './api'
 
-import React, { useEffect, useRef, useState } from 'react'
 import { fromBase64JsonToObject, parseParams } from './util'
+import { useEffect, useRef, useState } from 'react'
 
-import Webcam from 'react-webcam'
+import Recorder from './Recorder'
 
-/*
 const UPLOAD_STATES = {
   NOT_STARTED: 'NOT_STARTED',
   UPLOADING: 'UPLOADING',
   UPLOADED: 'UPLOADED',
   ERROR: 'ERROR',
 }
-*/
+
 function App() {
+  const [uploadState, setUploadState] = useState(UPLOAD_STATES.NOT_STARTED)
   const [url, setUrl] = useState('')
   const videoNoteRef = useRef<HTMLVideoElement>(null)
-  const webcamRef = useRef<HTMLVideoElement>(null)
-  const mediaRecorderRef = useRef(null)
-  const [capturing, setCapturing] = useState(false)
-  const [recordedChunks, setRecordedChunks] = useState([])
-
-  const handleDataAvailable = React.useCallback(
-    // @ts-expect-error
-    ({ data }) => {
-      if (data.size > 0) {
-        setRecordedChunks((prev) => prev.concat(data))
-      }
-    },
-    [setRecordedChunks]
-  )
-
-  const handleStartCaptureClick = React.useCallback(() => {
-    setCapturing(true)
-    videoNoteRef.current.currentTime = 0
-    videoNoteRef.current.play()
-    const webmSupported = MediaRecorder.isTypeSupported('video/webm')
-    // @ts-expect-error
-    mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, {
-      mimeType: webmSupported ? 'video/webm' : 'video/mp4',
-    })
-    // @ts-expect-error
-    mediaRecorderRef.current.addEventListener(
-      'dataavailable',
-      handleDataAvailable
-    )
-    // @ts-expect-error
-    mediaRecorderRef.current.start()
-  }, [webcamRef, setCapturing, mediaRecorderRef, handleDataAvailable])
-
-  const handleStopCaptureClick = React.useCallback(() => {
-    videoNoteRef.current?.pause()
-    // @ts-expect-error
-    mediaRecorderRef.current.stop()
-    setCapturing(false)
-  }, [mediaRecorderRef, setCapturing])
-
-  const send = React.useCallback(() => {
-    if (recordedChunks.length) {
-      const blob = new Blob(recordedChunks, {
-        type: mediaRecorderRef.current.mimeType,
-      })
-      api
-        .sendRecording(blob, url)
-        .then(() => {})
-        .catch((e) => {})
-      setRecordedChunks([])
-    }
-  }, [recordedChunks, url])
 
   useEffect(() => {
     const query = parseParams(window.location.search)
@@ -93,14 +41,36 @@ function App() {
         src={url}
         ref={videoNoteRef}
       ></video>
-      <Webcam mirrored={true} ref={webcamRef} />
+      <Recorder
+        onStartCapture={() => {
+          videoNoteRef.current.currentTime = 0
+          videoNoteRef.current.play()
+        }}
+        onStopCapture={() => {
+          videoNoteRef.current.pause()
+        }}
+        onVideoReady={(blob) => {
+          setUploadState(UPLOAD_STATES.UPLOADING)
+          api
+            .sendRecording(blob, url)
+            .then(() => {
+              setUploadState(UPLOAD_STATES.UPLOADED)
+            })
+            .catch((e) => {
+              setUploadState(UPLOAD_STATES.ERROR)
+            })
+        }}
+      ></Recorder>
+      {uploadState === UPLOAD_STATES.UPLOADING && (
+        <div className="uploading">Uploading...</div>
+      )}
+      {uploadState === UPLOAD_STATES.UPLOADED && (
+        <div className="uploaded">Uploaded!</div>
+      )}
+      {uploadState === UPLOAD_STATES.ERROR && (
+        <div className="error">Error!</div>
+      )}
       <div className="buttons-panel">
-        {capturing ? (
-          <button onClick={handleStopCaptureClick}>Stop ⏹️</button>
-        ) : (
-          <button onClick={handleStartCaptureClick}>Record 🔴</button>
-        )}
-        {recordedChunks.length > 0 && <button onClick={send}>Send ✅</button>}
         <button
           onClick={() => {
             window.Telegram.WebApp.openLink(window.location.href, {
