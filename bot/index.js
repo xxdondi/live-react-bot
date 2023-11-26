@@ -41,6 +41,31 @@ bot.on(message('video_note'), (ctx) => {
     .catch(() => ctx.reply('Something went wrong, sorry!'))
 
 })
+
+bot.on(message('video'), (ctx) => {
+  bot
+    .telegram
+    .getFileLink(ctx.message.video.file_id)
+    .then((fileLink) => {
+      const finalUrl = WEB_APP_URL + objectToBase64Json({ link: fileLink  })
+      ctx.reply('Click React to get started :) ', {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: 'React',
+                web_app: {
+                  url: finalUrl,
+                }
+              }
+            ]
+          ]
+        }
+      })
+    })
+    .catch(() => ctx.reply('Something went wrong, sorry!'))
+})
+
 bot.launch()
 
 // Enable graceful stop

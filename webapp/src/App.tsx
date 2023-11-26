@@ -5,6 +5,7 @@ import './App.css'
 import * as api from './api'
 
 import { fromBase64JsonToObject, parseParams } from './util'
+import toast, { Toaster } from 'react-hot-toast'
 import { useEffect, useRef, useState } from 'react'
 
 import Recorder from './Recorder'
@@ -33,6 +34,7 @@ function App() {
   }, [])
   return (
     <div className="App">
+      <Toaster />
       <video
         playsInline
         id="video"
@@ -51,13 +53,20 @@ function App() {
         }}
         onVideoReady={(blob) => {
           setUploadState(UPLOAD_STATES.UPLOADING)
+          const uploadingId = toast.loading('Uploading...')
           api
             .sendRecording(blob, url)
             .then(() => {
               setUploadState(UPLOAD_STATES.UPLOADED)
+              toast.dismiss(uploadingId)
+              toast.success('Uploaded! Closing the app in 3 seconds')
+              window.setTimeout(() => {
+                window.Telegram.WebApp.close()
+              }, 3000)
             })
             .catch((e) => {
               setUploadState(UPLOAD_STATES.ERROR)
+              toast.error('Upload failed!')
             })
         }}
       ></Recorder>

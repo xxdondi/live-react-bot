@@ -46,8 +46,8 @@
 
 .buttons-panel {
   position: absolute;
-  text-align: center;
-  left: 0; right: 0;
+  text-align: left;
+  left: 20px;
   top: 20px;
   width: 300px;
   margin: 0 auto;
