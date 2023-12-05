@@ -8,6 +8,7 @@ import { downloadFile } from './util.js'
 import ffmpeg from 'fluent-ffmpeg'
 import ffmpegPath from '@ffmpeg-installer/ffmpeg'
 import fs from 'fs'
+import { nanoid } from 'nanoid'
 import { processVideo } from './ffmpeg.js'
 
 async function main() {
@@ -27,9 +28,10 @@ async function main() {
       noteUrl = json['noteUrl'],
       userId = json['userId']
 
-    const srcVideoFilename = '/tmp/srcVideo.mp4',
-      reactionFilename = '/tmp/reaction.webm',
-      outputFilename = '/tmp/test.mp4'
+    const uniqueId = `${nanoid()}-${userId}`
+    const srcVideoFilename = `/tmp/srcVideo_${uniqueId}.mp4`,
+      reactionFilename = `/tmp/reaction_${uniqueId}.webm`,
+      outputFilename = `/tmp/output_${uniqueId}.mp4`
 
     await downloadFile(noteUrl, srcVideoFilename)
     fs.writeFileSync(reactionFilename, Buffer.from(blob, 'base64'))

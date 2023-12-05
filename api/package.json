@@ -23,6 +23,7 @@
     "dotenv": "^16.3.1",
     "fastify": "^4.24.3",
     "fluent-ffmpeg": "^2.1.2",
+    "nanoid": "^5.0.4",
     "node-fetch": "^3.3.2",
     "telegraf": "^4.15.0",
     "telegram": "^2.19.10"
