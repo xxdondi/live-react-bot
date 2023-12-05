@@ -26,14 +26,19 @@ async function main() {
     const json = req.body
     const blob = json['blob'],
       noteUrl = json['noteUrl'],
-      userId = json['userId']
-
+      userId = json['userId'],
+      container = json['container']
+    let reactionFileExtension = 'webm'
+    if (container === 'video/mp4') {
+      reactionFileExtension = 'mp4'
+    }
     const uniqueId = `${nanoid()}-${userId}`
     const srcVideoFilename = `/tmp/srcVideo_${uniqueId}.mp4`,
-      reactionFilename = `/tmp/reaction_${uniqueId}.webm`,
+      reactionFilename = `/tmp/reaction_${uniqueId}.${reactionFileExtension}`,
       outputFilename = `/tmp/output_${uniqueId}.mp4`
 
     await downloadFile(noteUrl, srcVideoFilename)
+
     fs.writeFileSync(reactionFilename, Buffer.from(blob, 'base64'))
     await processVideo(reactionFilename, srcVideoFilename, outputFilename)
 

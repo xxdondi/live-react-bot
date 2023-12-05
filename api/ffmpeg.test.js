@@ -16,7 +16,7 @@ test(
       './test_data/output.mp4'
     )
     expect(fs.existsSync('./test_data/output.mp4')).toBe(true)
-    fs.unlinkSync('./test_data/output.mp4')
+    //fs.unlinkSync('./test_data/output.mp4')
   },
   5000 * 20
 )

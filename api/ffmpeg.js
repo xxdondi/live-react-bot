@@ -19,8 +19,9 @@ export function processVideo(
         '[bg][aSrcVideo_mix]amix=inputs=2[a]', // Merge and pan the audio
       ])
       .map('[a]')
-      .withFPSOutput(25)
-      .addOptions(['-preset fast', '-crf 20'])
+      .withFPSOutput(24)
+      .addOptions(['-preset fast', '-crf 24'])
+      .addOutputOptions(['-shortest'])
       .output(outputFilename)
       .on('end', function () {
         resolve()
