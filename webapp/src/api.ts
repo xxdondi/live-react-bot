@@ -10,6 +10,7 @@ export async function sendRecording(video: Blob, noteUrl: string) {
     body: JSON.stringify({
       noteUrl,
       blob: videoBase64,
+      container: video.type,
       // @ts-expect-error
       userId: window.Telegram.WebApp.initDataUnsafe.user.id,
     }),

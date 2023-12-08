@@ -1,4 +1,6 @@
 .App {
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .App-logo {
@@ -37,18 +39,17 @@
 }
 
 #video {
-  border-radius: 50%;
   position: fixed;
   z-index: 999;
-  top: 20px;
-  left: 20px;
+  top: 2%;
+  left: 2%;
 }
 
 .buttons-panel {
   position: absolute;
   text-align: left;
   left: 20px;
-  top: 20px;
+  bottom: 20px;
   width: 300px;
   margin: 0 auto;
   z-index: 9999;
@@ -56,4 +57,22 @@
 
 .buttons-panel button{
   padding: 10px;
+}
+
+video.square {
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+}
+
+video.landscape {
+  width: 260px;
+  height: 180px;
+  border-radius: 10px;
+}
+
+video.portrait {
+  width: 180px;
+  height: 260px;
+  border-radius: 10px;
 }

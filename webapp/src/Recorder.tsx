@@ -20,6 +20,7 @@ const Recorder: React.FC<RecorderProps> = (props) => {
   const handleDataAvailable = useCallback(
     // @ts-expect-error
     ({ data }) => {
+      console.log('mediaRecorder.ondataavailable, e.data.size=' + data.size)
       if (data.size > 0) {
         setRecordedChunks((prev) => prev.concat(data))
       }
@@ -28,19 +29,41 @@ const Recorder: React.FC<RecorderProps> = (props) => {
   )
 
   const handleStartCaptureClick = useCallback(() => {
-    setCapturing(true)
-    onStartCapture()
+    if (webcamRef.current !== null && webcamRef.current.stream !== null) {
+      setCapturing(true)
+      onStartCapture()
 
-    const webmSupported = MediaRecorder.isTypeSupported('video/webm')
-    // @ts-expect-error
-    mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, {
-      mimeType: webmSupported ? 'video/webm' : 'video/mp4',
-    })
-    mediaRecorderRef.current.addEventListener(
-      'dataavailable',
-      handleDataAvailable
-    )
-    mediaRecorderRef.current.start()
+      let mrOptions
+      if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+        mrOptions = { mimeType: 'video/webm;codecs=vp9' }
+      } else if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) {
+        mrOptions = { mimeType: 'video/webm;codecs=h264' }
+      } else if (MediaRecorder.isTypeSupported('video/webm')) {
+        mrOptions = { mimeType: 'video/webm' }
+      } else if (MediaRecorder.isTypeSupported('video/mp4')) {
+        mrOptions = { mimeType: 'video/mp4' }
+      }
+      if (mrOptions !== undefined) {
+        console.log('Using MIME =' + mrOptions.mimeType)
+      } else {
+        console.log(
+          "No supported MIME type found, falling back to browser's default"
+        )
+      }
+      // @ts-expect-error
+      mediaRecorderRef.current = new MediaRecorder(
+        webcamRef.current.stream,
+        mrOptions
+      )
+      mediaRecorderRef.current.addEventListener(
+        'dataavailable',
+        handleDataAvailable
+      )
+      mediaRecorderRef.current.addEventListener('error', (e) => {
+        console.log('mediaRecorder.onerror: ' + e)
+      })
+      mediaRecorderRef.current.start()
+    }
   }, [
     webcamRef,
     setCapturing,
@@ -50,10 +73,13 @@ const Recorder: React.FC<RecorderProps> = (props) => {
   ])
 
   const handleStopCaptureClick = useCallback(() => {
-    // @ts-expect-error
-    mediaRecorderRef.current.stop()
-    setCapturing(false)
-    onStopCapture()
+    if (mediaRecorderRef.current === null) {
+      console.error('mediaRecorderRef.current is null, cannot stop')
+    } else {
+      mediaRecorderRef.current.stop()
+      setCapturing(false)
+      onStopCapture()
+    }
   }, [mediaRecorderRef, setCapturing, onStopCapture])
 
   const send = useCallback(() => {
@@ -67,9 +93,18 @@ const Recorder: React.FC<RecorderProps> = (props) => {
       setRecordedChunks([])
     }
   }, [recordedChunks, onVideoReady])
+
   return (
     <div>
-      <Webcam audio={true} muted={true} mirrored={true} ref={webcamRef} />
+      <Webcam
+        audio={true}
+        muted={true}
+        videoConstraints={{
+          facingMode: 'user',
+        }}
+        mirrored={true}
+        ref={webcamRef}
+      />
       {capturing ? (
         <button onClick={handleStopCaptureClick}>Stop ⏹️</button>
       ) : (
