@@ -2,7 +2,7 @@ require("dotenv").config();
 const { Telegraf } = require("telegraf");
 const { message } = require("telegraf/filters");
 
-const WEB_APP_URL = "https://dondixx.dev/?data=";
+const WEB_APP_URL = "https://xxdondi.dev/?data=";
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
