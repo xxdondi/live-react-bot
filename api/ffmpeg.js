@@ -1,13 +1,34 @@
 import ffmpeg from 'fluent-ffmpeg'
 
-export function processVideo(
+function reencodeVideo(srcVideoFilename, outputFilename) {
+  return new Promise((resolve, reject) => {
+    ffmpeg(srcVideoFilename)
+      .videoCodec('libx264')
+      .addOptions(['-profile:v high', '-level 4.0'])
+      .audioCodec('copy')
+      .output(outputFilename)
+      .on('end', () => {
+        console.log('Re-encoding completed.')
+        resolve()
+      })
+      .on('error', (err) => {
+        console.log('An error occurred: ' + err.message)
+        reject()
+      })
+      .run()
+  })
+}
+
+export async function processVideo(
   reactionFilename,
   srcVideoFilename,
   outputFilename
 ) {
+  const reencodedFilename = '/tmp/' + Math.random() * 1000000 + '.mp4'
+  await reencodeVideo(reactionFilename, reencodedFilename)
   return new Promise((resolve, reject) => {
     ffmpeg()
-      .input(reactionFilename)
+      .input(reencodedFilename)
       .input(srcVideoFilename)
       .complexFilter([
         '[0:v]scale=320:320,setpts=PTS-STARTPTS[vReaction]', // Scale and set PTS for the first video
