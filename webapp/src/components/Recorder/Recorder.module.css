@@ -1,0 +1,61 @@
+.recorderBtn {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  box-shadow: 0 0 5px #ccc;
+  font-weight: 500;
+  cursor: pointer;
+  height: 75px;
+  margin: 0 10px;
+  width: 75px;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.recorderBtn:active {
+  background-color: #ccc;
+  width: 77px;
+  height: 77px;
+}
+
+.recorderBtn span {
+  margin: 0;
+  padding: 0;
+}
+
+.recorderContainer {
+  position: relative;
+}
+
+.recorderBtnContainer {
+  position: absolute;
+  bottom: 2%;
+  right: 3%;
+  font-size: 2rem;
+}
+
+.timerContainer {
+  position: absolute;
+  bottom: 2%;
+  left: 3%;
+  font-size: 2rem;
+  color: #ffffff;
+}
+
+.recIndicator {
+  position: absolute;
+  top: 2%;
+  right: 3%;
+  font-size: 2rem;
+  color: #ffffff;
+}
+
+.blink {
+  animation: blink-animation 2s steps(5, start) infinite;
+}
+
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}

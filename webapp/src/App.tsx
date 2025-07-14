@@ -4,62 +4,48 @@ import './App.css'
 
 import * as api from './api'
 
-import { fromBase64JsonToObject, parseParams } from './util'
+import { UPLOAD_STATES, useStoreActions, useStoreState } from './store'
+import { downloadBlob, fromBase64JsonToObject, parseParams } from './util'
 import toast, { Toaster } from 'react-hot-toast'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import Recorder from './Recorder'
-
-const UPLOAD_STATES = {
-  NOT_STARTED: 'NOT_STARTED',
-  UPLOADING: 'UPLOADING',
-  UPLOADED: 'UPLOADED',
-  ERROR: 'ERROR',
-}
+import { FloatingPreview } from './components/FloatingPreview'
+import Recorder from './components/Recorder'
 
 function App() {
-  const [uploadState, setUploadState] = useState(UPLOAD_STATES.NOT_STARTED)
-  const [url, setUrl] = useState('')
-  const videoNoteRef = useRef<HTMLVideoElement>(null)
+  const [shouldRequestMedia, setShouldRequestMedia] = useState(false)
+  const uploadState = useStoreState((state) => state.uploadState)
+  const setUploadState = useStoreActions((actions) => actions.setUploadState)
 
-  const [videoClassnames, setVideoClassnames] = useState<string[]>([])
-  const onMetadataLoaded = useCallback(() => {
-    const w = videoNoteRef.current.videoWidth,
-      h = videoNoteRef.current.videoHeight
-    const ratio = w / h
-    if (ratio > 1) {
-      setVideoClassnames(['landscape'])
-    } else if (ratio < 1) {
-      setVideoClassnames(['portrait'])
-    } else {
-      setVideoClassnames(['square'])
-    }
-  })
+  const videoNoteRef = useRef<HTMLVideoElement>(null)
+  const [url, setUrl] = useState('')
 
   useEffect(() => {
-    const query = parseParams(window.location.search)
-    // @ts-expect-error
-    const startData = fromBase64JsonToObject(query['data'])
-    setUrl(startData.link)
-    startData.link = uploadState.toString()
-    if (window.Telegram) {
-      window.Telegram.WebApp.ready()
-      window.Telegram.WebApp.expand()
+    window.setTimeout(() => {
+      setShouldRequestMedia(true)
+    }, 1000)
+  }, [shouldRequestMedia])
+
+  useEffect(() => {
+    if (uploadState === UPLOAD_STATES.NOT_STARTED) {
+      const query = parseParams(window.location.search)
+      // @ts-expect-error
+      const startData = fromBase64JsonToObject(query['data'])
+      setUrl(startData.link)
+      startData.link = uploadState.toString()
+      if (window.Telegram) {
+        window.Telegram.WebApp.ready()
+        window.Telegram.WebApp.expand()
+      }
     }
   }, [uploadState])
   return (
     <div className="App">
       <Toaster />
       <div className="recording-body">
-        <video
-          className={videoClassnames.join(' ')}
-          playsInline
-          onLoadedMetadata={onMetadataLoaded}
-          id="video"
-          src={url}
-          ref={videoNoteRef}
-        ></video>
+        <FloatingPreview videoRef={videoNoteRef} src={url} />
         <Recorder
+          shouldRequestMedia={shouldRequestMedia}
           onStartCapture={() => {
             videoNoteRef.current.currentTime = 0
             videoNoteRef.current.play()
@@ -69,6 +55,7 @@ function App() {
           }}
           onVideoReady={(blob) => {
             setUploadState(UPLOAD_STATES.UPLOADING)
+            downloadBlob(blob, 'video.mp4')
             const uploadingId = toast.loading('Uploading...')
             api
               .sendRecording(blob, url)
@@ -86,18 +73,6 @@ function App() {
               })
           }}
         ></Recorder>
-      </div>
-
-      <div className="buttons-panel">
-        <button
-          onClick={() => {
-            window.Telegram.WebApp.openLink(window.location.href, {
-              try_instant_view: false,
-            })
-          }}
-        >
-          Open External 🔄
-        </button>
       </div>
     </div>
   )

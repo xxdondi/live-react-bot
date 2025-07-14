@@ -25,19 +25,6 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 #video {
   position: fixed;
   z-index: 999;
@@ -45,19 +32,6 @@
   left: 2%;
 }
 
-.buttons-panel {
-  position: absolute;
-  text-align: left;
-  left: 20px;
-  bottom: 20px;
-  width: 300px;
-  margin: 0 auto;
-  z-index: 9999;
-}
-
-.buttons-panel button{
-  padding: 10px;
-}
 
 video.square {
   width: 260px;
